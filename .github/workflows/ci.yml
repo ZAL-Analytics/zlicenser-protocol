@@ -17,9 +17,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo test
-      - run: cargo test --all-features
-      - run: cargo test --no-default-features
+      - run: cargo test -p zlicenser-protocol
+      - run: cargo test -p zlicenser-protocol --all-features
+      - run: cargo test -p zlicenser-protocol --no-default-features
 
   clippy:
     name: Clippy
@@ -30,8 +30,8 @@ jobs:
         with:
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - run: cargo clippy --all-features -- -D warnings
-      - run: cargo clippy --no-default-features -- -D warnings
+      - run: cargo clippy -p zlicenser-protocol --all-features -- -D warnings
+      - run: cargo clippy -p zlicenser-protocol --no-default-features -- -D warnings
 
   fmt:
     name: Rustfmt
@@ -48,13 +48,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: EmbarkStudios/cargo-deny-action@v1
+      - uses: EmbarkStudios/cargo-deny-action@v2
 
   audit:
     name: Audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: rustsec/audit-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo install cargo-audit --locked
+      - run: cargo audit
