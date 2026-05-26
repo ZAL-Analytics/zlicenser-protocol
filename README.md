@@ -1,45 +1,53 @@
 # zlicenser-protocol
 
-Shared protocol types and communication logic between [zlicenser](https://github.com/arsalan-anwari/zlicenser) (client-side) and [zlicenser-server](https://github.com/arsalan-anwari/zlicenser-server) (vendor-side backend).
+Shared protocol types, wire formats, cryptographic primitives, and hardware fingerprinting for the [zlicenser](https://github.com/zal-analytics/zlicenser) licensing framework.
 
-> This crate is under development. Crate name reserved in the meantime.
+## Overview
 
----
+This crate is the authoritative source for everything that crosses the wire between a `zlicenser` client and a `zlicenser-server` vendor backend. It is consumed by both as a crates.io dependency with different feature sets.
 
-## What is this crate?
+## Related repositories
 
-`zlicenser-protocol` is the shared library that both the vendor-hosted server and the end-user client depend on. It defines the wire types, request/response structures, and communication logic used across the zlicenser ecosystem.
+- [zlicenser](https://github.com/zal-analytics/zlicenser): client library and user-facing apps
+- [zlicenser-server](https://github.com/zal-analytics/zlicenser-server): server library and vendor backend
 
-The broader zlicenser project is an open-source Rust licensing framework for commercial software. It produces per-customer encrypted builds bound to a hardware fingerprint, so every copy a vendor ships is cryptographically attributable to the customer who received it — running entirely in user space, with no kernel modules or elevated privileges required.
+## Features
 
-## Role in the ecosystem
+| Feature | Description | Default |
+|---|---|---|
+| `validate` | Server-side fingerprint validation (no I/O) | yes |
+| `tsa-verify` | RFC 3161 timestamp token verification | yes |
+| `collect-linux` | Client-side hardware fingerprint collection (Linux) | no |
+| `tpm` | Optional TPM 2.0 support | no |
+| `tsa-clients` | TSA client implementations (network) | no |
 
-| Crate | Role |
-|---|---|
-| [`zlicenser`](https://github.com/arsalan-anwari/zlicenser) | Client-side: hardware fingerprinting, decryption shim, launcher, and vendor GUI |
-| [`zlicenser-server`](https://github.com/arsalan-anwari/zlicenser-server) | Server-side: license management, usage tracking, request validation, and payment/timekeeping |
-| `zlicenser-protocol` *(this crate)* | Shared: wire types, request/response structs, and communication logic used by both sides |
+## System dependencies for the `tpm` feature
 
-## Planned scope
+The `tpm` feature requires TPM 2.0 system libraries to be installed before building.
 
-- License issuance request and response types
-- Revocation and re-enrollment message types
-- Hardware fingerprint envelope format
-- Serialization and versioning helpers
-- Shared error and status codes
+### Fedora
 
-## Status
+```bash
+sudo dnf install tpm2-tss-devel tpm2-abrmd
+```
 
-| Component | Status |
-|---|---|
-| Wire types | Planned |
-| Request / response structs | Planned |
-| Fingerprint envelope | Planned |
-| Serialization helpers | Planned |
-| Versioning | Planned |
+### Ubuntu
 
----
+```bash
+sudo apt-get update
+sudo apt-get install libtss2-dev tpm2-abrmd
+```
+
+### Verify installation
+
+```bash
+# Fedora
+rpm -qa | grep -E 'tss2|tpm2'
+
+# Ubuntu
+dpkg -l | grep -E 'tss2|tpm2'
+```
 
 ## License
 
-Apache-2.0. See [LICENSE](LICENSE).
+Apache-2.0, see [LICENSE](LICENSE).
