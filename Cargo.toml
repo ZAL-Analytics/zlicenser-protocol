@@ -1,0 +1,12 @@
+[package]
+name = "zlicenser-protocol"
+version = "0.1.0"
+edition = "2021"
+authors = ["arsalan-anwari <arsalan@anwari.nl>"]
+description = "Shared protocol types and communication logic between the zlicenser client and zlicenser-server vendor backend."
+documentation = "https://docs.rs/zlicenser-protocol"
+repository = "https://github.com/arsalan-anwari/zlicenser-protocol"
+license = "Apache-2.0"
+keywords = ["licensing", "drm", "hardware-fingerprint", "protocol", "zlicenser"]
+categories = ["encoding", "network-programming"]
+readme = "README.md"
