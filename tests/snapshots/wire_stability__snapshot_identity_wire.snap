@@ -1,0 +1,5 @@
+---
+source: tests/wire_stability.rs
+expression: "hex::encode(&bytes)"
+---
+a2646e616d656d416c696365204578616d706c6565656d61696c71616c696365406578616d706c652e636f6d

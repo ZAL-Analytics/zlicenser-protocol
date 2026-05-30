@@ -1,0 +1,5 @@
+---
+source: tests/wire_stability.rs
+expression: "hex::encode(&air_gapped)"
+---
+6a6169722d676170706564

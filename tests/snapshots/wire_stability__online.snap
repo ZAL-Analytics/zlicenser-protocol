@@ -1,0 +1,5 @@
+---
+source: tests/wire_stability.rs
+expression: "hex::encode(&online)"
+---
+666f6e6c696e65
