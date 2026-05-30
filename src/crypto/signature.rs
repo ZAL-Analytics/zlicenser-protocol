@@ -56,7 +56,9 @@ impl VerifyingKey {
     }
 
     pub fn verify(&self, msg: &[u8], sig: &Signature) -> Result<(), Error> {
-        self.0.verify(msg, &sig.0).map_err(|_| Error::SignatureInvalid)
+        self.0
+            .verify(msg, &sig.0)
+            .map_err(|_| Error::SignatureInvalid)
     }
 }
 
@@ -128,7 +130,10 @@ mod tests {
         let mut sig_bytes = sk.sign(b"message").to_bytes();
         sig_bytes[0] ^= 0x01;
         let bad_sig = Signature::from_bytes(&sig_bytes);
-        assert!(matches!(vk.verify(b"message", &bad_sig), Err(Error::SignatureInvalid)));
+        assert!(matches!(
+            vk.verify(b"message", &bad_sig),
+            Err(Error::SignatureInvalid)
+        ));
     }
 
     #[test]

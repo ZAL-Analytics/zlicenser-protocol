@@ -1,8 +1,8 @@
 use zlicenser_protocol::{
     message::{
         BindingCertificate, BindingPayload, ConnectivityMode, Identity, LicenseGrant,
-        LicenseGrantPayload, LicenseRequest, LicenseTerms, Receipt, ReceiptPayload,
-        TransferPolicy, TsaTier,
+        LicenseGrantPayload, LicenseRequest, LicenseTerms, Receipt, ReceiptPayload, TransferPolicy,
+        TsaTier,
     },
     wire,
 };

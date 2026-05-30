@@ -8,7 +8,6 @@ use crate::error::Error;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Share(Vec<u8>);
 
-
 pub fn split(secret: &[u8; 32], threshold: u8, count: u8) -> Result<Vec<Share>, Error> {
     Gf256::split_array(threshold as usize, count as usize, secret.as_slice(), OsRng)
         .map(|shares| shares.into_iter().map(Share).collect())

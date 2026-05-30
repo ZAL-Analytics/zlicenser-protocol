@@ -55,7 +55,13 @@ pub fn encrypt(key: &AeadKey, nonce: &Nonce, plaintext: &[u8], aad: &[u8]) -> Ve
     let cipher = XChaCha20Poly1305::new(&key.0);
     let xnonce = XNonce::from_slice(&nonce.0);
     cipher
-        .encrypt(xnonce, Payload { msg: plaintext, aad })
+        .encrypt(
+            xnonce,
+            Payload {
+                msg: plaintext,
+                aad,
+            },
+        )
         .expect("XChaCha20Poly1305 encrypt: key or nonce size mismatch, this is a bug")
 }
 
@@ -68,7 +74,13 @@ pub fn decrypt(
     let cipher = XChaCha20Poly1305::new(&key.0);
     let xnonce = XNonce::from_slice(&nonce.0);
     cipher
-        .decrypt(xnonce, Payload { msg: ciphertext, aad })
+        .decrypt(
+            xnonce,
+            Payload {
+                msg: ciphertext,
+                aad,
+            },
+        )
         .map_err(|_| Error::Decrypt)
 }
 
@@ -124,7 +136,10 @@ mod tests {
         // Flip last byte of the Poly1305 tag
         let last = ct.len() - 1;
         ct[last] ^= 0xff;
-        assert!(matches!(decrypt(&key, &nonce, &ct, b""), Err(Error::Decrypt)));
+        assert!(matches!(
+            decrypt(&key, &nonce, &ct, b""),
+            Err(Error::Decrypt)
+        ));
     }
 
     #[test]
@@ -132,6 +147,9 @@ mod tests {
         let key = AeadKey::generate();
         let nonce = Nonce::random();
         let ct = encrypt(&key, &nonce, b"msg", b"right-aad");
-        assert!(matches!(decrypt(&key, &nonce, &ct, b"wrong-aad"), Err(Error::Decrypt)));
+        assert!(matches!(
+            decrypt(&key, &nonce, &ct, b"wrong-aad"),
+            Err(Error::Decrypt)
+        ));
     }
 }

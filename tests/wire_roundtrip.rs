@@ -2,8 +2,8 @@ use proptest::prelude::*;
 use zlicenser_protocol::{
     message::{
         BindingCertificate, BindingPayload, ConnectivityMode, Identity, LicenseGrant,
-        LicenseGrantPayload, LicenseRequest, LicenseTerms, Receipt, ReceiptPayload,
-        TransferPolicy, TsaTier, PROTOCOL_VERSION,
+        LicenseGrantPayload, LicenseRequest, LicenseTerms, Receipt, ReceiptPayload, TransferPolicy,
+        TsaTier, PROTOCOL_VERSION,
     },
     wire,
 };
