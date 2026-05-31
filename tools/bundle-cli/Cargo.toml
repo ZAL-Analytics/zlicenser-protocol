@@ -1,0 +1,17 @@
+[package]
+name = "zlicenser-bundle"
+version = "0.1.0"
+edition = "2021"
+description = "CLI tool for inspecting and verifying zlicenser evidence bundles"
+publish = false
+
+[[bin]]
+name = "zlicenser-bundle"
+path = "src/main.rs"
+
+[dependencies]
+zlicenser-protocol = { path = "../..", features = ["tsa-verify"] }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+chrono = "0.4"
+hex = "0.4"

@@ -4,9 +4,7 @@ use sha2::Sha256;
 pub const INFO_PAYLOAD_KEY: &[u8] = b"zlicenser-v1-payload-key";
 pub const INFO_FINGERPRINT_KEY: &[u8] = b"zlicenser-v1-fingerprint-key";
 
-/// Derives key material into `out` using HKDF-SHA-256.
-///
-/// Panics if `out.len()` exceeds 255 × 32 bytes (HKDF limit).
+/// HKDF-SHA-256 into `out`. Panics if out exceeds 255*32 bytes.
 pub fn derive(ikm: &[u8], salt: &[u8], info: &[u8], out: &mut [u8]) {
     let hk = Hkdf::<Sha256>::new(Some(salt), ikm);
     hk.expand(info, out)

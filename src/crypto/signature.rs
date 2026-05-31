@@ -6,8 +6,7 @@ use zeroize::{Zeroize, ZeroizeOnDrop};
 
 use crate::error::Error;
 
-// Stores raw seed bytes so Zeroize can be derived.
-// ed25519_dalek::SigningKey zeroizes itself on drop but doesn't impl the Zeroize trait.
+// raw seed bytes so we can derive Zeroize, dalek's SigningKey doesn't impl it
 #[derive(Zeroize, ZeroizeOnDrop)]
 pub struct SigningKey([u8; 32]);
 

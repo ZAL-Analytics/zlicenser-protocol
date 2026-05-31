@@ -1,0 +1,5 @@
+[advisories]
+# RUSTSEC-2023-0071: Marvin Attack timing side-channel. Affects RSA private-key
+# operations (decryption/signing) only. We use rsa solely for signature
+# verification (public key), so this does not apply. No fix is available.
+ignore = ["RUSTSEC-2023-0071"]

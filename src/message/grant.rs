@@ -57,6 +57,10 @@ pub enum TransferPolicy {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum TsaTier {
+    /// free, tamper-evidence only
     Free,
-    Paid,
+    /// subscription-based, commercially recognised, not eIDAS qualified
+    Standard,
+    /// eIDAS qualified, statutory legal weight
+    Qualified,
 }

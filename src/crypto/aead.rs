@@ -49,8 +49,7 @@ impl Nonce {
     }
 }
 
-/// Encrypts `plaintext` with XChaCha20-Poly1305. Returns ciphertext with appended 16-byte tag.
-/// The nonce is not prepended; callers carry it separately in their wire structs.
+/// Encrypts with XChaCha20-Poly1305. Nonce is not prepended, callers track it in their wire structs.
 pub fn encrypt(key: &AeadKey, nonce: &Nonce, plaintext: &[u8], aad: &[u8]) -> Vec<u8> {
     let cipher = XChaCha20Poly1305::new(&key.0);
     let xnonce = XNonce::from_slice(&nonce.0);

@@ -19,6 +19,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo test -p zlicenser-protocol
+      - run: cargo test -p zlicenser-protocol --features tsa-test-utils
       - run: cargo test -p zlicenser-protocol --all-features
       - run: cargo test -p zlicenser-protocol --no-default-features
 
