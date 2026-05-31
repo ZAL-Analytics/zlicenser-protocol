@@ -95,7 +95,7 @@ fn main() {
     let customer_sk = SigningKey::generate();
     let now = unix_now();
 
-    // Step 3: build and sign the four protocol messages 
+    // Step 3: build and sign the four protocol messages
 
     // LicenseRequest  (customer → vendor)
     let request_id = derive_id(b"request", now);

@@ -491,7 +491,8 @@ pub(crate) mod inner {
     fn verify_ecdsa_sha512(sig: &[u8], data: &[u8], spki_der: &[u8]) -> crate::Result<()> {
         let prehash = Sha512::digest(data);
 
-        {  // try P-256
+        {
+            // try P-256
             use p256::pkcs8::DecodePublicKey;
             if let Ok(vk) = p256::ecdsa::VerifyingKey::from_public_key_der(spki_der) {
                 use p256::ecdsa::signature::hazmat::PrehashVerifier;
@@ -503,7 +504,8 @@ pub(crate) mod inner {
             }
         }
 
-        {  // try P-384
+        {
+            // try P-384
             use p384::pkcs8::DecodePublicKey;
             if let Ok(vk) = p384::ecdsa::VerifyingKey::from_public_key_der(spki_der) {
                 use p384::ecdsa::signature::hazmat::PrehashVerifier;
