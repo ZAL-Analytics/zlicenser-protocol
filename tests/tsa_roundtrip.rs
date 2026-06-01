@@ -92,7 +92,6 @@ async fn qtsa_mock_roundtrip() {
     assert_eq!(verified.hashed_message, expected_hash);
 }
 
-
 /// Confirms the mock server handles multiple simultaneous requests correctly.
 #[tokio::test]
 async fn mock_server_handles_concurrent_requests() {
@@ -131,7 +130,6 @@ fn build_token_for_hash_verifies_correctly() {
 
     assert_eq!(verified.hashed_message, hash);
 }
-
 
 /// Calls the real FreeTSA service. Only runs when ZLICENSER_LIVE_TSA=1 is set
 /// so it never fires in CI accidentally.
