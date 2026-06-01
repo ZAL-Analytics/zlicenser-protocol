@@ -37,7 +37,7 @@ use zlicenser_protocol::{
 fn main() {
     let out_path = parse_args();
 
-    // Step 1: collect hardware identifiers ─────────────
+    // Step 1: collect hardware identifiers
 
     println!("Collecting hardware identifiers...\n");
 
@@ -97,7 +97,7 @@ fn main() {
 
     // Step 3: build and sign the four protocol messages
 
-    // LicenseRequest  (customer → vendor)
+    // LicenseRequest  (customer --> vendor)
     let request_id = derive_id(b"request", now);
     let grant_id = derive_id(b"grant", now);
     let receipt_id = derive_id(b"receipt", now);
@@ -121,7 +121,7 @@ fn main() {
     };
     let request_bytes = wire::encode(&request).unwrap();
 
-    // LicenseGrant  (vendor → customer), vendor signs the payload
+    // LicenseGrant  (vendor --> customer), vendor signs the payload
     let one_year = 365 * 24 * 3600;
     let grant_payload = LicenseGrantPayload {
         protocol_version: PROTOCOL_VERSION,
@@ -151,7 +151,7 @@ fn main() {
     };
     let grant_bytes = wire::encode(&grant).unwrap();
 
-    // Receipt  (customer → vendor), customer signs the payload
+    // Receipt  (customer --> vendor), customer signs the payload
     let receipt_payload = ReceiptPayload {
         protocol_version: PROTOCOL_VERSION,
         receipt_id,
@@ -168,7 +168,7 @@ fn main() {
     };
     let receipt_bytes = wire::encode(&receipt).unwrap();
 
-    // BindingCertificate  (vendor → customer), vendor signs the payload
+    // BindingCertificate  (vendor --> customer), vendor signs the payload
     let binding_payload = BindingPayload {
         protocol_version: PROTOCOL_VERSION,
         binding_id,
@@ -187,7 +187,7 @@ fn main() {
     };
     let binding_bytes = wire::encode(&binding).unwrap();
 
-    // Step 4: assemble and dual-sign the evidence bundle ───────────────────
+    // Step 4: assemble and dual-sign the evidence bundle
 
     let terms_text =
         b"Example product license terms - replace with real terms text at purchase time.";
@@ -215,7 +215,7 @@ fn main() {
     let partial = EvidenceBundle::sign_vendor(bundle_payload, &vendor_sk).unwrap();
     let bundle = partial.add_customer_signature(&customer_sk).unwrap();
 
-    // Step 5: write to disk ────────
+    // Step 5: write to disk
 
     let bundle_bytes = bundle.to_bytes().unwrap();
     if let Some(parent) = out_path.parent() {
@@ -252,8 +252,6 @@ fn main() {
         hex::encode(vendor_sk.verifying_key().to_bytes()),
     );
 }
-
-// helpers ──────
 
 /// Shows text identifiers as-is and binary ones (like TPM certs) as abbreviated hex.
 fn display_value(value: &[u8]) -> String {

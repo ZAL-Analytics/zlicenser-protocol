@@ -26,7 +26,7 @@ step() {
 }
 check_tool() {
   if ! command -v "$1" &>/dev/null; then
-    echo -e "  ${YLW}SKIP${RST}  $1 not installed  →  cargo install $1"; return 1
+    echo -e "  ${YLW}SKIP${RST}  $1 not installed  -->  cargo install $1"; return 1
   fi
 }
 

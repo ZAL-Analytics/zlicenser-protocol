@@ -4,7 +4,7 @@
 //!   cargo test --features tsa-test-utils -- tsa
 //!
 //! These tests exercise the full path:
-//!   request_token_to() → mock HTTP server → TimeStampResp → extract_token → verify_with_extra_cert
+//!   request_token_to() --> mock HTTP server --> TimeStampResp --> extract_token --> verify_with_extra_cert
 
 #![cfg(feature = "tsa-test-utils")]
 
@@ -17,8 +17,6 @@ use zlicenser_protocol::tsa::{
 };
 
 const TEST_MESSAGE: &[u8] = b"test binding certificate bytes for round-trip";
-
-// ---- freetsa ----------------------------------------------------------------
 
 #[tokio::test]
 async fn freetsa_mock_roundtrip() {
@@ -47,8 +45,6 @@ async fn freetsa_mock_roundtrip() {
     );
 }
 
-// ---- evidency ---------------------------------------------------------------
-
 #[tokio::test]
 async fn evidency_mock_roundtrip() {
     let server = MockTsaServer::start().await;
@@ -73,8 +69,6 @@ async fn evidency_mock_roundtrip() {
     assert_eq!(verified.hashed_message, expected_hash);
 }
 
-// ---- qtsa -------------------------------------------------------------------
-
 #[tokio::test]
 async fn qtsa_mock_roundtrip() {
     let server = MockTsaServer::start().await;
@@ -98,7 +92,6 @@ async fn qtsa_mock_roundtrip() {
     assert_eq!(verified.hashed_message, expected_hash);
 }
 
-// ---- concurrent requests ----------------------------------------------------
 
 /// Confirms the mock server handles multiple simultaneous requests correctly.
 #[tokio::test]
@@ -122,8 +115,6 @@ async fn mock_server_handles_concurrent_requests() {
     }
 }
 
-// ---- build_token_for_hash unit test -----------------------------------------
-
 /// Directly tests the token builder without going through HTTP.
 #[test]
 fn build_token_for_hash_verifies_correctly() {
@@ -141,7 +132,6 @@ fn build_token_for_hash_verifies_correctly() {
     assert_eq!(verified.hashed_message, hash);
 }
 
-// ---- live provider tests (manual, gated behind env var) ---------------------
 
 /// Calls the real FreeTSA service. Only runs when ZLICENSER_LIVE_TSA=1 is set
 /// so it never fires in CI accidentally.

@@ -1,5 +1,5 @@
 /// Collects real hardware identifiers from the current Linux machine and runs
-/// a full enroll → reconstruct cycle, printing a detailed report.
+/// a full enroll --> reconstruct cycle, printing a detailed report.
 ///
 /// Run (unprivileged, skips SMBIOS):
 ///   cargo run --example linux_collect --features collect-linux
