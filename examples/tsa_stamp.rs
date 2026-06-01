@@ -40,7 +40,7 @@ async fn main() {
         Ok(verified) => {
             let provider_label = match verified.provider {
                 TsaProvider::FreeTsa => "FreeTSA (free tier)",
-                TsaProvider::Evidency => "Evidency (standard tier)",
+                TsaProvider::Sectigo => "Sectigo (standard tier)",
                 TsaProvider::Qtsa => "QTSA (qualified tier)",
             };
             println!("  Provider   {}", provider_label);

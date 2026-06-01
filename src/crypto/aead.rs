@@ -87,7 +87,7 @@ pub fn decrypt(
 mod tests {
     use super::*;
 
-    // XChaCha20-Poly1305 test vector from draft-irtf-cfrg-xchacha-03 §A.3
+    // XChaCha20-Poly1305 test vector from draft-irtf-cfrg-xchacha-03 chapter A.3
     // https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-xchacha-03#appendix-A.3
     #[test]
     fn xchacha20poly1305_test_vector() {

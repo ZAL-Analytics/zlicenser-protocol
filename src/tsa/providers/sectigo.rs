@@ -1,25 +1,20 @@
-//! Evidency TSA provider. Commercially recognised, not eIDAS qualified. Requires an API key.
+//! Sectigo TSA provider. Standard tier, commercially recognised. Free, no credentials required.
 
 use reqwest::Client;
 
 use crate::{error::Error, tsa::TsaProvider};
 
-const URL: &str = "https://tsa.evidency.io/api/timestamp";
+const URL: &str = "http://timestamp.sectigo.com";
 
-/// Sends message to Evidency and returns the raw DER token bytes.
-pub async fn request_token(
-    client: &Client,
-    message: &[u8],
-    api_key: &str,
-) -> crate::Result<Vec<u8>> {
-    request_token_to(client, message, api_key, URL).await
+/// Sends `message` to Sectigo and returns the raw DER timestamp token bytes.
+pub async fn request_token(client: &Client, message: &[u8]) -> crate::Result<Vec<u8>> {
+    request_token_to(client, message, URL).await
 }
 
 /// Like `request_token` but with a configurable URL for tests against a local mock.
 pub async fn request_token_to(
     client: &Client,
     message: &[u8],
-    api_key: &str,
     url: &str,
 ) -> crate::Result<Vec<u8>> {
     let req_der = super::ts_request::build(message);
@@ -27,15 +22,14 @@ pub async fn request_token_to(
     let resp = client
         .post(url)
         .header("Content-Type", "application/timestamp-query")
-        .header("X-API-Key", api_key)
         .body(req_der)
         .send()
         .await
-        .map_err(|e| Error::Collection(format!("Evidency request: {e}")))?;
+        .map_err(|e| Error::Collection(format!("Sectigo request: {e}")))?;
 
     if !resp.status().is_success() {
         return Err(Error::TsaVerification(format!(
-            "Evidency returned HTTP {}",
+            "Sectigo returned HTTP {}",
             resp.status()
         )));
     }
@@ -43,11 +37,11 @@ pub async fn request_token_to(
     let bytes = resp
         .bytes()
         .await
-        .map_err(|e| Error::Collection(format!("Evidency response body: {e}")))?;
+        .map_err(|e| Error::Collection(format!("Sectigo response body: {e}")))?;
 
     super::ts_request::extract_token(&bytes)
 }
 
 pub fn provider() -> TsaProvider {
-    TsaProvider::Evidency
+    TsaProvider::Sectigo
 }

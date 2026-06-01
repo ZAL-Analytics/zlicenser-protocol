@@ -1,6 +1,12 @@
-pub mod evidency;
 pub mod freetsa;
 pub mod qtsa;
+pub mod sectigo;
+
+/// Extracts the raw TimeStampToken DER bytes from a TimeStampResp DER blob.
+/// Use this to parse a captured `.tsr` file before passing the token to `verify()`.
+pub fn extract_token(resp_der: &[u8]) -> crate::Result<Vec<u8>> {
+    ts_request::extract_token(resp_der)
+}
 
 // Shared DER helpers used by all provider request builders.
 pub(super) mod ts_request {
@@ -50,7 +56,7 @@ pub(super) mod ts_request {
         Ok(token_start.to_vec())
     }
 
-    // ---- minimal DER utilities --------------------------------------------------
+    // -minimal DER utilities
 
     fn sequence(inner: &[u8]) -> Vec<u8> {
         tlv(0x30, inner)

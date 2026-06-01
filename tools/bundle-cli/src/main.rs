@@ -56,7 +56,7 @@ fn main() {
     }
 }
 
-// ---- read command -----------------------------------------------------------
+// -read command
 
 fn cmd_read(path: &PathBuf) -> Result<()> {
     let bundle = load_bundle(path)?;
@@ -120,7 +120,7 @@ fn cmd_read(path: &PathBuf) -> Result<()> {
     Ok(())
 }
 
-// ---- verify command ---------------------------------------------------------
+// -verify command
 
 fn cmd_verify(
     path: &PathBuf,
@@ -199,7 +199,7 @@ fn cmd_verify(
     Ok(())
 }
 
-// ---- helpers ----------------------------------------------------------------
+// -helpers
 
 fn load_bundle(path: &PathBuf) -> Result<EvidenceBundle> {
     let bytes =

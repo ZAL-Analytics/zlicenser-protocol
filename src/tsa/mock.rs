@@ -15,9 +15,8 @@ use rasn_pkix::Certificate;
 use sha2::{Digest, Sha256};
 
 use crate::tsa::verify::inner::{
-    AlgorithmIdentifier, Attribute, Attributes, CertificateSet, ContentInfo,
-    EncapsulatedContentInfo, IssuerAndSerialNumber, MessageImprint, SignedData, SignerIdentifier,
-    SignerInfo, TstInfo,
+    AlgorithmIdentifier, Attribute, Attributes, ContentInfo, EncapsulatedContentInfo,
+    IssuerAndSerialNumber, MessageImprint, SignedData, SignerIdentifier, SignerInfo, TstInfo,
 };
 
 // OIDs used when building mock tokens
@@ -231,7 +230,7 @@ pub fn build_token_for_hash(hashed_message: &[u8], cert_der: &[u8], key_der: &[u
             e_content_type: oid(OID_TST_INFO),
             e_content: Some(OctetString::from(tst_der)),
         },
-        certificates: Some(CertificateSet(cert_set)),
+        certificates: Some(cert_set),
         signer_infos,
     };
 

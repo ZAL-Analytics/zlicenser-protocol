@@ -4,7 +4,7 @@ resolver = "2"
 
 [package]
 name = "zlicenser-protocol"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["ZAL Analytics <arsalan@anwari.nl>"]
 description = "Shared protocol types, wire formats, cryptographic primitives, and hardware fingerprinting for the zlicenser licensing framework."
@@ -24,7 +24,7 @@ tpm = ["collect-linux", "dep:tss-esapi"]
 tsa-verify = ["dep:rasn", "dep:rasn-pkix", "dep:rsa", "dep:p256", "dep:p384"]
 tsa-clients = ["tsa-verify", "dep:reqwest"]
 # Enables the in-process mock TSA server used in integration tests.
-# Not suitable for production — only add to dev/test builds.
+# Not suitable for production only add to dev/test builds.
 tsa-test-utils = ["tsa-clients", "dep:rcgen", "dep:chrono", "dep:tokio"]
 
 [dependencies]
@@ -73,4 +73,8 @@ required-features = ["collect-linux"]
 
 [[example]]
 name = "tsa_stamp"
+required-features = ["tsa-clients"]
+
+[[example]]
+name = "capture_tsr"
 required-features = ["tsa-clients"]

@@ -12,7 +12,7 @@ use reqwest::Client;
 use sha2::{Digest, Sha256};
 use zlicenser_protocol::tsa::{
     mock::MockTsaServer,
-    providers::{evidency, freetsa, qtsa},
+    providers::{freetsa, qtsa, sectigo},
     verify::{verify_with_extra_cert, TsaProvider},
 };
 
@@ -37,7 +37,6 @@ async fn freetsa_mock_roundtrip() {
     )
     .expect("verify_with_extra_cert failed");
 
-    // The mock token was built with SHA-256 of TEST_MESSAGE as the imprint
     let expected_hash = Sha256::digest(TEST_MESSAGE).to_vec();
     assert_eq!(
         verified.hashed_message, expected_hash,
@@ -46,12 +45,11 @@ async fn freetsa_mock_roundtrip() {
 }
 
 #[tokio::test]
-async fn evidency_mock_roundtrip() {
+async fn sectigo_mock_roundtrip() {
     let server = MockTsaServer::start().await;
     let client = Client::new();
 
-    // The mock server ignores authentication headers, so any key works here.
-    let token = evidency::request_token_to(&client, TEST_MESSAGE, "dummy-api-key", &server.url())
+    let token = sectigo::request_token_to(&client, TEST_MESSAGE, &server.url())
         .await
         .expect("request_token_to failed");
 
@@ -61,7 +59,7 @@ async fn evidency_mock_roundtrip() {
         &token,
         TEST_MESSAGE,
         &server.test_cert.cert_der,
-        TsaProvider::Evidency,
+        TsaProvider::Sectigo,
     )
     .expect("verify_with_extra_cert failed");
 
@@ -74,7 +72,7 @@ async fn qtsa_mock_roundtrip() {
     let server = MockTsaServer::start().await;
     let client = Client::new();
 
-    let token = qtsa::request_token_to(&client, TEST_MESSAGE, "dummy-api-key", &server.url())
+    let token = qtsa::request_token_to(&client, TEST_MESSAGE, &server.url())
         .await
         .expect("request_token_to failed");
 
@@ -142,7 +140,6 @@ async fn freetsa_live_roundtrip() {
         .await
         .expect("live FreeTSA call failed");
 
-    // Basic structural check, full cert verification depends on embedded certs being current.
     assert!(!token.is_empty());
     println!("Live FreeTSA token: {} bytes", token.len());
 }

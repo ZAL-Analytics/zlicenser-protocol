@@ -21,14 +21,14 @@ pub enum Error {
     #[error("malformed message: {0}")]
     Malformed(&'static str),
 
-    // --- fingerprint errors ---
+    // fingerprint errors
     #[error("hardware identifier collection failed: {0}")]
     Collection(String),
 
     #[error("fingerprint reconstruction failed: recovered {recovered} shares, need {threshold}")]
     InsufficientIdentifiers { recovered: usize, threshold: usize },
 
-    // --- TSA errors ---
+    // TSA errors
     #[error("TSA token parse error: {0}")]
     TsaParse(String),
 

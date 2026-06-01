@@ -94,7 +94,7 @@ impl Eq for Signature {}
 mod tests {
     use super::*;
 
-    // RFC 8032 §6.1 Test Vector 1, Ed25519 with empty message
+    // RFC 8032 chapter 6.1 Test Vector 1, Ed25519 with empty message
     #[test]
     fn rfc8032_test_vector_1() {
         let private_bytes: [u8; 32] = [

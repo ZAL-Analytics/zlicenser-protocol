@@ -20,6 +20,7 @@ pub(crate) mod inner {
     const OID_SHA256: &[u32] = &[2, 16, 840, 1, 101, 3, 4, 2, 1];
     const OID_SHA384: &[u32] = &[2, 16, 840, 1, 101, 3, 4, 2, 2];
     const OID_SHA512: &[u32] = &[2, 16, 840, 1, 101, 3, 4, 2, 3];
+    const OID_RSA_ENCRYPTION: &[u32] = &[1, 2, 840, 113549, 1, 1, 1];
     const OID_RSA_SHA256: &[u32] = &[1, 2, 840, 113549, 1, 1, 11];
     const OID_RSA_SHA384: &[u32] = &[1, 2, 840, 113549, 1, 1, 12];
     const OID_RSA_SHA512: &[u32] = &[1, 2, 840, 113549, 1, 1, 13];
@@ -80,17 +81,13 @@ pub(crate) mod inner {
         pub e_content: Option<OctetString>,
     }
 
-    // Treat each element as opaque raw DER so we avoid needing Certificate: Hash.
-    #[derive(AsnType, Clone, Debug, Decode, Encode, PartialEq, Eq, Hash)]
-    pub struct CertificateSet(pub SetOf<Any>);
-
     #[derive(AsnType, Clone, Debug, Decode, Encode, PartialEq, Eq, Hash)]
     pub struct SignedData {
         pub version: Integer,
         pub digest_algorithms: SetOf<AlgorithmIdentifier>,
         pub encap_content_info: EncapsulatedContentInfo,
         #[rasn(tag(0))]
-        pub certificates: Option<CertificateSet>,
+        pub certificates: Option<SetOf<Any>>,
         pub signer_infos: SetOf<SignerInfo>,
     }
 
@@ -101,7 +98,7 @@ pub(crate) mod inner {
         pub content: Any,
     }
 
-    // RFC 3161 §2.4.2, accuracy is an optional sub-sequence
+    // RFC 3161 chapter 2.4.2, accuracy is an optional sub-sequence
     #[derive(AsnType, Clone, Debug, Decode, Encode)]
     pub struct TstAccuracy {
         pub seconds: Option<Integer>,
@@ -119,7 +116,7 @@ pub(crate) mod inner {
         pub message_imprint: MessageImprint,
         pub serial_number: Integer,
         pub gen_time: GeneralizedTime,
-        // --- optional fields (RFC 3161 §2.4.2) ---
+        // optional fields (RFC 3161 chapter 2.4.2)
         pub accuracy: Option<TstAccuracy>,
         // absent in DER means false; Some(true) means TSA guarantees ordering
         pub ordering: Option<bool>,
@@ -141,7 +138,7 @@ pub(crate) mod inner {
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub enum TsaProvider {
         FreeTsa,
-        Evidency,
+        Sectigo,
         Qtsa,
     }
 
@@ -168,10 +165,10 @@ pub(crate) mod inner {
                 ],
             },
             TrustAnchor {
-                provider: TsaProvider::Evidency,
+                provider: TsaProvider::Sectigo,
                 chain: &[
-                    include_bytes!("certs/evidency_prod_root.der"),
-                    include_bytes!("certs/evidency_sandbox_root.der"),
+                    include_bytes!("certs/sectigo_usertrust_root.der"),
+                    include_bytes!("certs/sectigo_tsa_r36.der"),
                 ],
             },
             TrustAnchor {
@@ -180,7 +177,6 @@ pub(crate) mod inner {
                     include_bytes!("certs/qtsa_root.der"),
                     include_bytes!("certs/qtsa_intermediate.der"),
                     include_bytes!("certs/qtsa_tsa_g4.der"),
-                    include_bytes!("certs/sectigo_usertrust_root.der"),
                 ],
             },
         ]
@@ -280,7 +276,7 @@ pub(crate) mod inner {
     ) -> crate::Result<Vec<u8>> {
         // 1. certs embedded in the token itself
         if let Some(certs) = &sd.certificates {
-            for cert_any in certs.0.to_vec() {
+            for cert_any in certs.to_vec() {
                 let cert_der = cert_any.as_bytes();
                 if signer_matches_cert(signer, cert_der) {
                     return Ok(cert_der.to_vec());
@@ -377,6 +373,22 @@ pub(crate) mod inner {
             verify_rsa_sha384(sig_bytes, &signed_bytes, &spki_der)
         } else if *sig_alg == oid(OID_RSA_SHA512) {
             verify_rsa_sha512(sig_bytes, &signed_bytes, &spki_der)
+        } else if *sig_alg == oid(OID_RSA_ENCRYPTION) {
+            // Some providers (e.g. Sectigo) use bare rsaEncryption OID with digest
+            // specified separately in digest_algorithm rather than a compound OID.
+            let digest_oid = &signer.digest_algorithm.algorithm;
+            if *digest_oid == oid(OID_SHA256) {
+                verify_rsa_sha256(sig_bytes, &signed_bytes, &spki_der)
+            } else if *digest_oid == oid(OID_SHA384) {
+                verify_rsa_sha384(sig_bytes, &signed_bytes, &spki_der)
+            } else if *digest_oid == oid(OID_SHA512) {
+                verify_rsa_sha512(sig_bytes, &signed_bytes, &spki_der)
+            } else {
+                Err(Error::TsaVerification(format!(
+                    "unsupported digest for rsaEncryption: {:?}",
+                    digest_oid
+                )))
+            }
         } else if *sig_alg == oid(OID_ECDSA_SHA256) {
             verify_ecdsa_p256(sig_bytes, &signed_bytes, &spki_der)
         } else if *sig_alg == oid(OID_ECDSA_SHA384) {
@@ -633,7 +645,7 @@ pub(crate) mod inner {
                     e_content_type: o(OID_TST_INFO_OBJ),
                     e_content: Some(OctetString::from(tst_der)),
                 },
-                certificates: Some(CertificateSet(certs_set)),
+                certificates: Some(certs_set),
                 signer_infos,
             };
             let sd_der = rasn::der::encode(&sd).unwrap();

@@ -1,25 +1,23 @@
-//! QTSA qualified TSA provider. eIDAS qualified, statutory legal weight. Requires an API key.
+//! QTSA qualified TSA provider. eIDAS qualified, statutory legal weight.
+//! Credentials are embedded in the endpoint URL. Set QTSA_URL at runtime.
 
 use reqwest::Client;
 
 use crate::{error::Error, tsa::TsaProvider};
 
-const URL: &str = "https://tsa.qtsa.eu/api/timestamp";
-
 /// Sends message to QTSA and returns the raw DER token bytes.
-pub async fn request_token(
-    client: &Client,
-    message: &[u8],
-    api_key: &str,
-) -> crate::Result<Vec<u8>> {
-    request_token_to(client, message, api_key, URL).await
+/// Reads the endpoint (with embedded credentials) from the `QTSA_URL` environment variable.
+pub async fn request_token(client: &Client, message: &[u8]) -> crate::Result<Vec<u8>> {
+    let url = std::env::var("QTSA_URL")
+        .map_err(|_| Error::Collection("QTSA_URL environment variable is not set".into()))?;
+    request_token_to(client, message, &url).await
 }
 
 /// Like `request_token` but with a configurable URL for tests against a local mock.
+/// The URL may contain embedded credentials (e.g. `https://user:pass@tsa.qtsa.eu/api/timestamp`).
 pub async fn request_token_to(
     client: &Client,
     message: &[u8],
-    api_key: &str,
     url: &str,
 ) -> crate::Result<Vec<u8>> {
     let req_der = super::ts_request::build(message);
@@ -27,7 +25,6 @@ pub async fn request_token_to(
     let resp = client
         .post(url)
         .header("Content-Type", "application/timestamp-query")
-        .header("Authorization", format!("Bearer {api_key}"))
         .body(req_der)
         .send()
         .await
