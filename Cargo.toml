@@ -4,9 +4,9 @@ resolver = "2"
 
 [package]
 name = "zlicenser-protocol"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
-authors = ["ZAL Analytics <arsalan@anwari.nl>"]
+authors = ["ZAL Analytics <info@zal-analytics.ch>"]
 description = "Shared protocol types, wire formats, cryptographic primitives, and hardware fingerprinting for the zlicenser licensing framework."
 documentation = "https://docs.rs/zlicenser-protocol"
 repository = "https://github.com/zal-analytics/zlicenser-protocol"
