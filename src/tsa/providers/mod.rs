@@ -66,6 +66,8 @@ pub(super) mod ts_request {
         tlv(0x04, data)
     }
 
+    // All `as u8` casts here are safe: each branch is guarded by a prior range check.
+    #[allow(clippy::cast_possible_truncation)]
     fn tlv(tag: u8, value: &[u8]) -> Vec<u8> {
         let mut out = vec![tag];
         let len = value.len();

@@ -16,7 +16,7 @@ const SKIP_PREFIXES: &[&str] = &[
 pub fn mac_addresses() -> crate::Result<Vec<HardwareIdentifier>> {
     let mut entries: Vec<(String, Vec<u8>)> = fs::read_dir(NET_PATH)
         .map_err(|e| Error::Collection(format!("{NET_PATH}: {e}")))?
-        .filter_map(|e| e.ok())
+        .filter_map(Result::ok)
         .filter_map(|entry| {
             let name = entry.file_name().to_string_lossy().into_owned();
             if SKIP_PREFIXES.iter().any(|p| name.starts_with(p)) {
@@ -45,7 +45,12 @@ pub fn mac_addresses() -> crate::Result<Vec<HardwareIdentifier>> {
         .into_iter()
         .enumerate()
         .map(|(i, (_, mac))| {
-            HardwareIdentifier::new(IdentifierKind::MacAddress { index: i as u8 }, mac)
+            HardwareIdentifier::new(
+                IdentifierKind::MacAddress {
+                    index: u8::try_from(i).expect("fewer than 256 network interfaces"),
+                },
+                mac,
+            )
         })
         .collect())
 }

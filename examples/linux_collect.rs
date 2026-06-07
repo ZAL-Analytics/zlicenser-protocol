@@ -14,7 +14,7 @@
 ///   sudo setcap cap_dac_read_search+ep target/debug/examples/linux_collect
 ///   ./target/debug/examples/linux_collect
 use zlicenser_protocol::fingerprint::{
-    compute_commitment, FuzzyExtractor, IdentifierTier, LinuxCollector,
+    FuzzyExtractor, IdentifierTier, LinuxCollector, compute_commitment,
 };
 
 fn main() {
@@ -22,7 +22,7 @@ fn main() {
     let report = collector.collect_with_report();
 
     println!("=== Hardware identifier collection report ===\n");
-    println!("  {:<6}  {:<25}  {}", "TIER", "SOURCE", "RESULT");
+    println!("  {:<6}  {:<25}  RESULT", "TIER", "SOURCE");
     println!("  {}", "─".repeat(70));
 
     for attempt in &report {

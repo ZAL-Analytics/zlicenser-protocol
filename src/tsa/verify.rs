@@ -2,10 +2,17 @@
 //! Checks message imprint, trust anchor pinning, and signature (RSA/ECDSA, SHA-256/384/512).
 
 #[cfg(feature = "tsa-verify")]
-pub use inner::{verify, verify_with_extra_cert, TsaProvider, VerifiedToken};
+pub use inner::{TsaProvider, VerifiedToken, verify, verify_with_extra_cert};
 
 #[cfg(feature = "tsa-verify")]
 pub(crate) mod inner {
+    // OID arcs like 113549 (RSA) and 10045 (EC) are well-known values; underscores would
+    // obscure their identity when cross-referencing against RFC/IANA tables.
+    #![allow(clippy::unreadable_literal)]
+    // rasn AsnType/Decode/Encode derive macros generate _-prefixed variable bindings internally;
+    // clippy attributes those to the struct field lines, triggering this lint as a false positive.
+    #![allow(clippy::no_effect_underscore_binding)]
+
     use rasn::prelude::*;
     use rasn_pkix::Certificate;
     use sha2::{Digest, Sha256, Sha384, Sha512};
@@ -318,8 +325,7 @@ pub(crate) mod inner {
                 .extensions
                 .as_ref()
                 .and_then(|exts| exts.iter().find(|e| e.extn_id == oid(OID_SUBJECT_KEY_ID)))
-                .map(|e| e.extn_value.as_ref() == skid.as_ref())
-                .unwrap_or(false),
+                .is_some_and(|e| e.extn_value.as_ref() == skid.as_ref()),
         }
     }
 
@@ -385,8 +391,7 @@ pub(crate) mod inner {
                 verify_rsa_sha512(sig_bytes, &signed_bytes, &spki_der)
             } else {
                 Err(Error::TsaVerification(format!(
-                    "unsupported digest for rsaEncryption: {:?}",
-                    digest_oid
+                    "unsupported digest for rsaEncryption: {digest_oid:?}"
                 )))
             }
         } else if *sig_alg == oid(OID_ECDSA_SHA256) {
@@ -397,8 +402,7 @@ pub(crate) mod inner {
             verify_ecdsa_sha512(sig_bytes, &signed_bytes, &spki_der)
         } else {
             Err(Error::TsaVerification(format!(
-                "unsupported signature algorithm: {:?}",
-                sig_alg
+                "unsupported signature algorithm: {sig_alg:?}"
             )))
         }
     }
@@ -477,7 +481,7 @@ pub(crate) mod inner {
 
     fn verify_ecdsa_p256(sig: &[u8], data: &[u8], spki_der: &[u8]) -> crate::Result<()> {
         use p256::{
-            ecdsa::{signature::Verifier, DerSignature, VerifyingKey},
+            ecdsa::{DerSignature, VerifyingKey, signature::Verifier},
             pkcs8::DecodePublicKey,
         };
         let vk = VerifyingKey::from_public_key_der(spki_der)
@@ -489,7 +493,7 @@ pub(crate) mod inner {
     }
 
     fn verify_ecdsa_p384(sig: &[u8], data: &[u8], spki_der: &[u8]) -> crate::Result<()> {
-        use p384::ecdsa::{signature::Verifier, DerSignature, VerifyingKey};
+        use p384::ecdsa::{DerSignature, VerifyingKey, signature::Verifier};
         use p384::pkcs8::DecodePublicKey;
         let vk = VerifyingKey::from_public_key_der(spki_der)
             .map_err(|e| Error::TsaVerification(format!("P-384 key: {e}")))?;
@@ -540,11 +544,11 @@ pub(crate) mod inner {
 
         use rasn::prelude::*;
         use rsa::{
+            RsaPrivateKey,
             pkcs1v15::SigningKey,
             pkcs8::EncodePublicKey,
             rand_core::OsRng,
             signature::{RandomizedSigner, SignatureEncoding},
-            RsaPrivateKey,
         };
         use sha2::{Digest, Sha256};
 
@@ -681,7 +685,7 @@ pub(crate) mod inner {
         #[test]
         fn mock_token_parses_and_imprint_matches() {
             let message = b"hello from the test suite";
-            let (token_der, _spki_der) = mock::build(message);
+            let (token_der, _) = mock::build(message);
 
             // checks parse + imprint only; full sig+cert chain is behind tsa-live-test
             let ci: ContentInfo = rasn::der::decode(&token_der).unwrap();
@@ -701,7 +705,7 @@ pub(crate) mod inner {
         #[test]
         fn wrong_message_imprint_detected() {
             let message = b"correct message";
-            let (token_der, _spki_der) = mock::build(message);
+            let (token_der, _) = mock::build(message);
 
             // Parse manually to check the imprint fails for a different message.
             let ci: ContentInfo = rasn::der::decode(&token_der).unwrap();

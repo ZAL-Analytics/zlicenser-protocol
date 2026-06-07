@@ -25,11 +25,11 @@ use std::{
 use zlicenser_protocol::{
     crypto::{hash, signature::SigningKey},
     evidence::{ConsentRecord, EvidenceBundle, EvidenceBundlePayload},
-    fingerprint::{compute_commitment, IdentifierTier, LinuxCollector},
+    fingerprint::{IdentifierTier, LinuxCollector, compute_commitment},
     message::{
         BindingCertificate, BindingPayload, ConnectivityMode, Identity, LicenseGrant,
-        LicenseGrantPayload, LicenseRequest, LicenseTerms, Receipt, ReceiptPayload, TransferPolicy,
-        TsaTier, PROTOCOL_VERSION,
+        LicenseGrantPayload, LicenseRequest, LicenseTerms, PROTOCOL_VERSION, Receipt,
+        ReceiptPayload, TransferPolicy, TsaTier,
     },
     wire,
 };

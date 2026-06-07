@@ -17,7 +17,7 @@
 use sha2::{Digest, Sha256};
 use zlicenser_protocol::tsa::{
     providers::extract_token,
-    verify::{verify, TsaProvider},
+    verify::{TsaProvider, verify},
 };
 
 /// Must match the message used in capture_tsr.rs.

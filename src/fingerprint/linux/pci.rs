@@ -14,7 +14,7 @@ const INTERESTING_CLASSES: &[u32] = &[0x01, 0x02, 0x03];
 pub fn pci_signatures() -> crate::Result<Vec<HardwareIdentifier>> {
     let mut entries: Vec<(String, Vec<u8>)> = fs::read_dir(PCI_DEVICES_PATH)
         .map_err(|e| Error::Collection(format!("{PCI_DEVICES_PATH}: {e}")))?
-        .filter_map(|e| e.ok())
+        .filter_map(Result::ok)
         .filter_map(|entry| {
             let addr = entry.file_name().to_string_lossy().into_owned();
             let path = entry.path();
@@ -43,7 +43,12 @@ pub fn pci_signatures() -> crate::Result<Vec<HardwareIdentifier>> {
         .into_iter()
         .enumerate()
         .map(|(i, (_, sig))| {
-            HardwareIdentifier::new(IdentifierKind::PciSignature { index: i as u8 }, sig)
+            HardwareIdentifier::new(
+                IdentifierKind::PciSignature {
+                    index: u8::try_from(i).expect("fewer than 256 PCI devices"),
+                },
+                sig,
+            )
         })
         .collect())
 }

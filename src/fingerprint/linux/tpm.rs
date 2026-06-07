@@ -1,7 +1,7 @@
 use tss_esapi::{
-    abstraction::{ek, AsymmetricAlgorithmSelection},
-    interface_types::key_bits::RsaKeyBits,
     Context, TctiNameConf,
+    abstraction::{AsymmetricAlgorithmSelection, ek},
+    interface_types::key_bits::RsaKeyBits,
 };
 
 use crate::{
@@ -11,6 +11,8 @@ use crate::{
 
 /// TPM 2.0 EK cert from NV storage, fused at manufacture, requires manufacturer-provisioned cert.
 pub fn endorsement_key() -> crate::Result<HardwareIdentifier> {
+    #[allow(clippy::default_trait_access)]
+    // tss_esapi DeviceConfig is not re-exported at a stable path
     let tcti = TctiNameConf::from_environment_variable()
         .unwrap_or_else(|_| TctiNameConf::Device(Default::default()));
 

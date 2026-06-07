@@ -8,7 +8,7 @@
 use reqwest::Client;
 use zlicenser_protocol::tsa::{
     providers::freetsa,
-    verify::{verify, TsaProvider},
+    verify::{TsaProvider, verify},
 };
 
 #[tokio::main]

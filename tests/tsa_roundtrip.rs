@@ -13,7 +13,7 @@ use sha2::{Digest, Sha256};
 use zlicenser_protocol::tsa::{
     mock::MockTsaServer,
     providers::{freetsa, qtsa, sectigo},
-    verify::{verify_with_extra_cert, TsaProvider},
+    verify::{TsaProvider, verify_with_extra_cert},
 };
 
 const TEST_MESSAGE: &[u8] = b"test binding certificate bytes for round-trip";
@@ -115,7 +115,7 @@ async fn mock_server_handles_concurrent_requests() {
 /// Directly tests the token builder without going through HTTP.
 #[test]
 fn build_token_for_hash_verifies_correctly() {
-    use zlicenser_protocol::tsa::mock::{build_token_for_hash, TestCert};
+    use zlicenser_protocol::tsa::mock::{TestCert, build_token_for_hash};
 
     let cert = TestCert::generate();
     let message = b"direct token build test";

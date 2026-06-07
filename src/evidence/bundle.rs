@@ -143,7 +143,7 @@ mod tests {
             terms_hash: [0xab; 32],
             consent: ConsentRecord {
                 checkboxes_ticked: vec!["terms_of_service".into(), "privacy_policy".into()],
-                consented_at: 1700000000,
+                consented_at: 1_700_000_000,
                 ip_address: "198.51.100.42".into(),
             },
             payment_reference: "ch_test_1234".into(),

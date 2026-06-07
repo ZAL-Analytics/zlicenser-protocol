@@ -5,8 +5,8 @@ pub mod identifier;
 pub mod linux;
 
 pub use extractor::{
-    compute_commitment, EncryptedShare, EnrollmentRecord, FuzzyExtractor, HardwareCollector,
-    MasterSecret, MockCollector,
+    EncryptedShare, EnrollmentRecord, FuzzyExtractor, HardwareCollector, MasterSecret,
+    MockCollector, compute_commitment,
 };
 pub use identifier::{HardwareIdentifier, IdentifierKind, IdentifierTier};
 

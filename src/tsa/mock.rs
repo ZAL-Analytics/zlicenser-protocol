@@ -2,11 +2,15 @@
 //! Binds to a random port, signs requests with a fresh P-256 cert.
 //! Only compiled with the `tsa-test-utils` feature.
 
+// OID arcs like 113549 (RSA) and 10045 (EC) are well-known values; underscores would
+// obscure their identity when cross-referencing against RFC/IANA tables.
+#![allow(clippy::unreadable_literal)]
+
 use std::sync::Arc;
 
 use chrono::offset::Utc;
 use p256::{
-    ecdsa::{signature::RandomizedSigner, Signature, SigningKey},
+    ecdsa::{Signature, SigningKey, signature::RandomizedSigner},
     pkcs8::DecodePrivateKey,
 };
 use rand::rngs::OsRng;
@@ -262,6 +266,8 @@ fn wrap_sequence(inner: &[u8]) -> Vec<u8> {
     der_tlv(0x30, inner)
 }
 
+// All `as u8` casts here are safe: each branch is guarded by a prior range check.
+#[allow(clippy::cast_possible_truncation)]
 fn der_tlv(tag: u8, value: &[u8]) -> Vec<u8> {
     let mut out = vec![tag];
     let len = value.len();

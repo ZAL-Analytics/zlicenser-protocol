@@ -166,6 +166,7 @@ impl LinuxCollector {
         out
     }
 
+    #[allow(clippy::unused_self)]
     fn try_single(
         &self,
         out: &mut Vec<CollectionAttempt>,
@@ -179,6 +180,7 @@ impl LinuxCollector {
         });
     }
 
+    #[allow(clippy::unused_self)]
     fn try_multi(
         &self,
         out: &mut Vec<CollectionAttempt>,

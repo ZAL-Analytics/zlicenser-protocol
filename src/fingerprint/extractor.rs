@@ -1,3 +1,4 @@
+use rand::RngCore;
 use serde::{Deserialize, Serialize};
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
@@ -50,7 +51,10 @@ impl MockCollector {
 
     /// Creates a fixture with a realistic spread of identifier kinds.
     pub fn default_fixture() -> Self {
-        use crate::fingerprint::identifier::IdentifierKind::*;
+        use crate::fingerprint::identifier::IdentifierKind::{
+            CpuVendorAndModel, DiskSerial, MacAddress, MachineId, PciSignature, SmbiosBoardUuid,
+            SmbiosSystemSerial,
+        };
         let entries = [
             (SmbiosBoardUuid, b"mock-board-uuid-0000".as_slice()),
             (SmbiosSystemSerial, b"mock-system-serial-00"),
@@ -132,11 +136,12 @@ impl FuzzyExtractor {
             return Err(Error::Collection("threshold must be at least 1".into()));
         }
 
-        use rand::RngCore;
         let mut secret = [0u8; 32];
         rand::rngs::OsRng.fill_bytes(&mut secret);
 
-        let shares = shamir::split(&secret, threshold, n as u8)?;
+        let n_u8 = u8::try_from(n)
+            .map_err(|_| Error::Collection("too many hardware identifiers (max 255)".into()))?;
+        let shares = shamir::split(&secret, threshold, n_u8)?;
 
         let encrypted: Vec<EncryptedShare> = identifiers
             .iter()
@@ -294,7 +299,7 @@ mod tests {
     #[test]
     fn enroll_rejects_threshold_above_count() {
         let ids = fixture_identifiers();
-        let too_high = ids.len() as u8 + 1;
+        let too_high = u8::try_from(ids.len()).unwrap() + 1;
         assert!(FuzzyExtractor::enroll(&ids, too_high).is_err());
     }
 
@@ -307,7 +312,7 @@ mod tests {
             drop_count in 0usize..3,
         ) {
             let ids = fixture_identifiers(); // 7 identifiers
-            let threshold = (ids.len() - drop_count) as u8;
+            let threshold = u8::try_from(ids.len() - drop_count).unwrap();
             if threshold == 0 { return Ok(()); }
             let (secret, record) = FuzzyExtractor::enroll(&ids, threshold).unwrap();
 

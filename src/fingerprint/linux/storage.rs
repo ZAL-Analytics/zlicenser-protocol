@@ -14,7 +14,7 @@ const SKIP_PREFIXES: &[&str] = &["loop", "ram", "zram", "dm-", "md"];
 pub fn disk_serials() -> crate::Result<Vec<HardwareIdentifier>> {
     let mut results: Vec<(String, Vec<u8>)> = fs::read_dir(BLOCK_PATH)
         .map_err(|e| Error::Collection(format!("{BLOCK_PATH}: {e}")))?
-        .filter_map(|e| e.ok())
+        .filter_map(Result::ok)
         .filter_map(|entry| {
             let name = entry.file_name().to_string_lossy().into_owned();
             if SKIP_PREFIXES.iter().any(|p| name.starts_with(p)) {
@@ -36,7 +36,12 @@ pub fn disk_serials() -> crate::Result<Vec<HardwareIdentifier>> {
         .into_iter()
         .enumerate()
         .map(|(i, (_, serial))| {
-            HardwareIdentifier::new(IdentifierKind::DiskSerial { index: i as u8 }, serial)
+            HardwareIdentifier::new(
+                IdentifierKind::DiskSerial {
+                    index: u8::try_from(i).expect("fewer than 256 storage devices"),
+                },
+                serial,
+            )
         })
         .collect())
 }
