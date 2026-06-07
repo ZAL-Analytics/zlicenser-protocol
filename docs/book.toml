@@ -1,8 +1,0 @@
-[book]
-authors = ["ZAL Analytics"]
-language = "en"
-multilingual = false
-src = "src"
-title = "zlicenser-protocol specification"
-
-[output.html]
