@@ -225,7 +225,7 @@ fn main() {
     }
     std::fs::write(&out_path, &bundle_bytes).unwrap();
 
-    // Summary ──
+    // Summary
 
     println!("Bundle written to  {}", out_path.display());
     println!("Size               {} bytes", bundle_bytes.len());

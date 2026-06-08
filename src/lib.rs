@@ -17,5 +17,8 @@ pub mod evidence;
 pub mod fingerprint;
 pub mod tsa;
 
+#[cfg(feature = "terms")]
+pub mod terms;
+
 pub use error::Error;
 pub type Result<T> = std::result::Result<T, Error>;
