@@ -15,6 +15,7 @@ pub mod wire;
 
 pub mod evidence;
 pub mod fingerprint;
+pub mod sessions;
 pub mod tsa;
 
 #[cfg(feature = "terms")]
