@@ -129,6 +129,32 @@ fn build_token_for_hash_verifies_correctly() {
     assert_eq!(verified.hashed_message, hash);
 }
 
+/// Verifies that `request_token_hashed_to` produces a valid token when given a pre-computed
+/// digest — matching what the server layer does to avoid double-hashing.
+#[tokio::test]
+async fn qtsa_hashed_mock_roundtrip() {
+    let server = MockTsaServer::start().await;
+    let client = Client::new();
+
+    let hash: [u8; 32] = Sha256::digest(TEST_MESSAGE).into();
+
+    let token = qtsa::request_token_hashed_to(&client, &hash, &server.url())
+        .await
+        .expect("request_token_hashed_to failed");
+
+    assert!(!token.is_empty());
+
+    let verified = verify_with_extra_cert(
+        &token,
+        TEST_MESSAGE,
+        &server.test_cert.cert_der,
+        TsaProvider::Qtsa,
+    )
+    .expect("verify_with_extra_cert failed");
+
+    assert_eq!(verified.hashed_message, hash.to_vec());
+}
+
 /// Calls the real FreeTSA service. Only runs when ZLICENSER_LIVE_TSA=1 is set
 /// so it never fires in CI accidentally.
 #[tokio::test]

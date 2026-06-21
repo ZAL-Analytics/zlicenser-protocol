@@ -1,27 +1,34 @@
 //! QTSA qualified TSA provider. eIDAS qualified, statutory legal weight.
-//! Credentials are embedded in the endpoint URL. Set QTSA_URL at runtime.
+//! Credentials are embedded in the endpoint URL.
+//! Pass the URL from your application layer; do not read environment variables here.
 
 use reqwest::Client;
 
 use crate::{error::Error, tsa::TsaProvider};
 
-/// Sends message to QTSA and returns the raw DER token bytes.
-/// Reads the endpoint (with embedded credentials) from the `QTSA_URL` environment variable.
-pub async fn request_token(client: &Client, message: &[u8]) -> crate::Result<Vec<u8>> {
-    let url = std::env::var("QTSA_URL")
-        .map_err(|_| Error::Collection("QTSA_URL environment variable is not set".into()))?;
-    request_token_to(client, message, &url).await
-}
-
-/// Like `request_token` but with a configurable URL for tests against a local mock.
-/// The URL may contain embedded credentials (e.g. `https://user:pass@tsa.qtsa.eu/api/timestamp`).
+/// Sends `message` to the QTSA endpoint and returns the raw DER token bytes.
+/// The URL may contain embedded credentials (`https://user:pass@tsa.qtsa.eu/api/timestamp`).
 pub async fn request_token_to(
     client: &Client,
     message: &[u8],
     url: &str,
 ) -> crate::Result<Vec<u8>> {
     let req_der = super::ts_request::build(message);
+    post(client, req_der, url).await
+}
 
+/// Like `request_token_to` but accepts a pre-computed SHA-256 digest instead of raw bytes.
+/// Use this from the server layer where the digest has already been computed.
+pub async fn request_token_hashed_to(
+    client: &Client,
+    hash: &[u8; 32],
+    url: &str,
+) -> crate::Result<Vec<u8>> {
+    let req_der = super::ts_request::build_from_hash(hash);
+    post(client, req_der, url).await
+}
+
+async fn post(client: &Client, req_der: Vec<u8>, url: &str) -> crate::Result<Vec<u8>> {
     let resp = client
         .post(url)
         .header("Content-Type", "application/timestamp-query")
