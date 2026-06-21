@@ -267,7 +267,7 @@ mod tests {
         let ids = fixture_identifiers();
         let (_secret, record) = FuzzyExtractor::enroll(&ids, 7).unwrap();
 
-        // Replace all values with different bytes – none should decrypt.
+        // Replace all values with different bytes, none should decrypt.
         let tampered: Vec<_> = ids
             .iter()
             .map(|id| HardwareIdentifier::new(id.kind.clone(), b"wrong-value".to_vec()))

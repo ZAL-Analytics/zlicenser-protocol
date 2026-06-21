@@ -56,7 +56,7 @@ pub(super) mod ts_request {
         Ok(token_start.to_vec())
     }
 
-    // -minimal DER utilities
+    // minimal DER utilities
 
     fn sequence(inner: &[u8]) -> Vec<u8> {
         tlv(0x30, inner)

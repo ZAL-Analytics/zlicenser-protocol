@@ -266,7 +266,7 @@ impl FromStr for TransferDeclaration {
 
 /// All term declarations for a product. Passed by value to template generation and validation.
 ///
-/// This type is not serialized , it crosses the server↔protocol boundary via function call only.
+/// This type is not serialized; it crosses the server/protocol boundary via function call only.
 #[non_exhaustive]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TermDeclarations {

@@ -1,4 +1,4 @@
-//! FreeTSA.org provider - free tier, tamper evidence only.
+//! FreeTSA.org provider, free tier, tamper evidence only.
 
 use reqwest::Client;
 

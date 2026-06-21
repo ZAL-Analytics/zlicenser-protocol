@@ -190,7 +190,7 @@ fn main() {
     // Step 4: assemble and dual-sign the evidence bundle
 
     let terms_text =
-        b"Example product license terms - replace with real terms text at purchase time.";
+        b"Example product license terms, replace with real terms text at purchase time.";
     let terms_hash = *hash::hash(terms_text).as_bytes();
 
     let bundle_payload = EvidenceBundlePayload {
@@ -262,7 +262,7 @@ fn display_value(value: &[u8]) -> String {
     if is_printable {
         String::from_utf8_lossy(value).into_owned()
     } else if value.len() > 16 {
-        format!("[{} bytes]  {}…", value.len(), hex::encode(&value[..12]))
+        format!("[{} bytes]  {}...", value.len(), hex::encode(&value[..12]))
     } else {
         hex::encode(value)
     }

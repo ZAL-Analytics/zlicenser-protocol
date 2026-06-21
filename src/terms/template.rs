@@ -7,8 +7,8 @@ use super::types::{
 
 /// Generates a Typst terms template pre-filled with mandatory blocks derived from `decls`.
 ///
-/// Vendors edit only the `/* zlicenser:vendor:start */ … /* zlicenser:vendor:end */` regions.
-/// Mandatory block content is fixed , any modification is flagged as a `Conflict` by
+/// Vendors edit only the `/* zlicenser:vendor:start */ ... /* zlicenser:vendor:end */` regions.
+/// Mandatory block content is fixed; any modification is flagged as a `Conflict` by
 /// [`crate::terms::validate_terms`].
 pub fn generate_template(decls: &TermDeclarations) -> String {
     let blocks = [

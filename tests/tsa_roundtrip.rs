@@ -130,7 +130,7 @@ fn build_token_for_hash_verifies_correctly() {
 }
 
 /// Verifies that `request_token_hashed_to` produces a valid token when given a pre-computed
-/// digest — matching what the server layer does to avoid double-hashing.
+/// digest, matching what the server layer does to avoid double-hashing.
 #[tokio::test]
 async fn qtsa_hashed_mock_roundtrip() {
     let server = MockTsaServer::start().await;

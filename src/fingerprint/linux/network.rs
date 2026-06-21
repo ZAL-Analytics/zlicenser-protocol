@@ -7,7 +7,7 @@ use crate::{
 
 const NET_PATH: &str = "/sys/class/net";
 
-// Interfaces to skip - these change too frequently to be useful identifiers.
+// Interfaces to skip, these change too frequently to be useful identifiers.
 const SKIP_PREFIXES: &[&str] = &[
     "lo", "veth", "docker", "br-", "virbr", "tun", "tap", "dummy",
 ];

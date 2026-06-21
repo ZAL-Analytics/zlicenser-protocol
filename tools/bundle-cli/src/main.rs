@@ -56,14 +56,14 @@ fn main() {
     }
 }
 
-// -read command
+// read command
 
 fn cmd_read(path: &PathBuf) -> Result<()> {
     let bundle = load_bundle(path)?;
     let p = &bundle.payload;
 
     println!("Evidence Bundle");
-    println!("{}", "═".repeat(60));
+    println!("{}", "=".repeat(60));
     println!();
 
     field("Protocol version", &p.protocol_version.to_string());
@@ -120,7 +120,7 @@ fn cmd_read(path: &PathBuf) -> Result<()> {
     Ok(())
 }
 
-// -verify command
+// verify command
 
 fn cmd_verify(
     path: &PathBuf,
@@ -199,7 +199,7 @@ fn cmd_verify(
     Ok(())
 }
 
-// -helpers
+// helpers
 
 fn load_bundle(path: &PathBuf) -> Result<EvidenceBundle> {
     let bytes =

@@ -23,7 +23,7 @@ fn main() {
 
     println!("=== Hardware identifier collection report ===\n");
     println!("  {:<6}  {:<25}  RESULT", "TIER", "SOURCE");
-    println!("  {}", "─".repeat(70));
+    println!("  {}", "-".repeat(70));
 
     for attempt in &report {
         let tier_label = match attempt.tier {
@@ -93,7 +93,7 @@ fn display_value(value: &[u8]) -> String {
         String::from_utf8_lossy(value).into_owned()
     } else if value.len() > 16 {
         // Binary blob (e.g. DER certificate), show size and a short hex prefix
-        format!("[{} bytes]  {}…", value.len(), hex::encode(&value[..12]))
+        format!("[{} bytes]  {}...", value.len(), hex::encode(&value[..12]))
     } else {
         hex::encode(value)
     }
