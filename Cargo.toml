@@ -6,6 +6,7 @@ resolver = "2"
 name = "zlicenser-protocol"
 version = "0.3.2"
 edition = "2024"
+rust-version = "1.85"
 authors = ["ZAL Analytics <info@zal-analytics.ch>"]
 description = "Shared protocol types, wire formats, cryptographic primitives, and hardware fingerprinting for the zlicenser licensing framework."
 documentation = "https://docs.rs/zlicenser-protocol"

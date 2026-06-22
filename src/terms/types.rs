@@ -34,7 +34,9 @@ impl FromStr for WarrantyDeclaration {
             "Days90" => Ok(Self::Days90),
             "Year1" => Ok(Self::Year1),
             "Year2" => Ok(Self::Year2),
-            _ => Err(crate::Error::Malformed("unknown WarrantyDeclaration")),
+            _ => Err(crate::Error::Malformed(
+                "unknown WarrantyDeclaration".into(),
+            )),
         }
     }
 }
@@ -64,7 +66,7 @@ impl FromStr for RefundDeclaration {
             "None" => Ok(Self::None),
             "EuStatutory14Day" => Ok(Self::EuStatutory14Day),
             "Days30" => Ok(Self::Days30),
-            _ => Err(crate::Error::Malformed("unknown RefundDeclaration")),
+            _ => Err(crate::Error::Malformed("unknown RefundDeclaration".into())),
         }
     }
 }
@@ -94,7 +96,9 @@ impl FromStr for RevocationDeclaration {
             "NotPossible" => Ok(Self::NotPossible),
             "WithNotice7Day" => Ok(Self::WithNotice7Day),
             "Immediate" => Ok(Self::Immediate),
-            _ => Err(crate::Error::Malformed("unknown RevocationDeclaration")),
+            _ => Err(crate::Error::Malformed(
+                "unknown RevocationDeclaration".into(),
+            )),
         }
     }
 }
@@ -127,10 +131,10 @@ impl FromStr for ExpiryDeclaration {
         {
             let n = inner
                 .parse::<u32>()
-                .map_err(|_| crate::Error::Malformed("invalid TimeLimitedMonths payload"))?;
+                .map_err(|_| crate::Error::Malformed("invalid TimeLimitedMonths payload".into()))?;
             return Ok(Self::TimeLimitedMonths(n));
         }
-        Err(crate::Error::Malformed("unknown ExpiryDeclaration"))
+        Err(crate::Error::Malformed("unknown ExpiryDeclaration".into()))
     }
 }
 
@@ -162,7 +166,7 @@ impl FromStr for SupportScope {
             "Installation" => Ok(Self::Installation),
             "FullTechnical" => Ok(Self::FullTechnical),
             "Unlimited" => Ok(Self::Unlimited),
-            _ => Err(crate::Error::Malformed("unknown SupportScope")),
+            _ => Err(crate::Error::Malformed("unknown SupportScope".into())),
         }
     }
 }
@@ -200,10 +204,10 @@ impl FromStr for UpdatesPolicy {
         {
             let n = inner
                 .parse::<u32>()
-                .map_err(|_| crate::Error::Malformed("invalid IncludedMonths payload"))?;
+                .map_err(|_| crate::Error::Malformed("invalid IncludedMonths payload".into()))?;
             return Ok(Self::IncludedMonths(n));
         }
-        Err(crate::Error::Malformed("unknown UpdatesPolicy"))
+        Err(crate::Error::Malformed("unknown UpdatesPolicy".into()))
     }
 }
 
@@ -232,7 +236,9 @@ impl FromStr for ConnectivityDeclaration {
             "AirGapped" => Ok(Self::AirGapped),
             "Online" => Ok(Self::Online),
             "AlwaysOnline" => Ok(Self::AlwaysOnline),
-            _ => Err(crate::Error::Malformed("unknown ConnectivityDeclaration")),
+            _ => Err(crate::Error::Malformed(
+                "unknown ConnectivityDeclaration".into(),
+            )),
         }
     }
 }
@@ -259,7 +265,9 @@ impl FromStr for TransferDeclaration {
         match s {
             "NotAvailable" => Ok(Self::NotAvailable),
             "VendorApproval" => Ok(Self::VendorApproval),
-            _ => Err(crate::Error::Malformed("unknown TransferDeclaration")),
+            _ => Err(crate::Error::Malformed(
+                "unknown TransferDeclaration".into(),
+            )),
         }
     }
 }

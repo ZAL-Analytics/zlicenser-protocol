@@ -50,7 +50,12 @@ impl Nonce {
 }
 
 /// Encrypts with XChaCha20-Poly1305. Nonce is not prepended, callers track it in their wire structs.
-pub fn encrypt(key: &AeadKey, nonce: &Nonce, plaintext: &[u8], aad: &[u8]) -> Vec<u8> {
+pub fn encrypt(
+    key: &AeadKey,
+    nonce: &Nonce,
+    plaintext: &[u8],
+    aad: &[u8],
+) -> Result<Vec<u8>, Error> {
     let cipher = XChaCha20Poly1305::new(&key.0);
     let xnonce = XNonce::from_slice(&nonce.0);
     cipher
@@ -61,7 +66,7 @@ pub fn encrypt(key: &AeadKey, nonce: &Nonce, plaintext: &[u8], aad: &[u8]) -> Ve
                 aad,
             },
         )
-        .expect("XChaCha20Poly1305 encrypt: key or nonce size mismatch, this is a bug")
+        .map_err(|_| Error::Encrypt)
 }
 
 pub fn decrypt(
@@ -120,7 +125,7 @@ mod tests {
 
         let key = AeadKey::from_bytes(&key_bytes);
         let nonce = Nonce::from_bytes(nonce_bytes);
-        let ct = encrypt(&key, &nonce, plaintext, aad);
+        let ct = encrypt(&key, &nonce, plaintext, aad).unwrap();
         assert_eq!(ct.as_slice(), expected_ct);
 
         let pt = decrypt(&key, &nonce, &ct, aad).unwrap();
@@ -131,7 +136,7 @@ mod tests {
     fn tampered_tag_returns_decrypt_error() {
         let key = AeadKey::generate();
         let nonce = Nonce::random();
-        let mut ct = encrypt(&key, &nonce, b"secret", b"");
+        let mut ct = encrypt(&key, &nonce, b"secret", b"").unwrap();
         // Flip last byte of the Poly1305 tag
         let last = ct.len() - 1;
         ct[last] ^= 0xff;
@@ -145,7 +150,7 @@ mod tests {
     fn wrong_aad_returns_decrypt_error() {
         let key = AeadKey::generate();
         let nonce = Nonce::random();
-        let ct = encrypt(&key, &nonce, b"msg", b"right-aad");
+        let ct = encrypt(&key, &nonce, b"msg", b"right-aad").unwrap();
         assert!(matches!(
             decrypt(&key, &nonce, &ct, b"wrong-aad"),
             Err(Error::Decrypt)

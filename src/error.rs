@@ -6,6 +6,9 @@ pub enum Error {
     #[error("CBOR decode error: {0}")]
     Decode(String),
 
+    #[error("AEAD encryption failed")]
+    Encrypt,
+
     #[error("AEAD decryption failed")]
     Decrypt,
 
@@ -19,7 +22,7 @@ pub enum Error {
     VersionMismatch { expected: u16, actual: u16 },
 
     #[error("malformed message: {0}")]
-    Malformed(&'static str),
+    Malformed(Box<str>),
 
     // fingerprint errors
     #[error("hardware identifier collection failed: {0}")]

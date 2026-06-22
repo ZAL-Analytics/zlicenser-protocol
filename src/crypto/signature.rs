@@ -47,7 +47,7 @@ impl VerifyingKey {
     pub fn from_bytes(b: &[u8; 32]) -> Result<Self, Error> {
         ed25519_dalek::VerifyingKey::from_bytes(b)
             .map(Self)
-            .map_err(|_| Error::Malformed("invalid Ed25519 verifying key"))
+            .map_err(|_| Error::Malformed("invalid Ed25519 verifying key".into()))
     }
 
     pub fn to_bytes(&self) -> [u8; 32] {

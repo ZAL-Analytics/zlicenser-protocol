@@ -143,20 +143,21 @@ impl FuzzyExtractor {
             .map_err(|_| Error::Collection("too many hardware identifiers (max 255)".into()))?;
         let shares = shamir::split(&secret, threshold, n_u8)?;
 
-        let encrypted: Vec<EncryptedShare> = identifiers
+        let encrypted: crate::Result<Vec<EncryptedShare>> = identifiers
             .iter()
             .zip(shares.iter())
             .map(|(id, share)| {
                 let key = derive_identifier_key(&id.value);
                 let nonce = Nonce::random();
-                let ciphertext = aead::encrypt(&key, &nonce, &share_to_bytes(share), &[]);
-                EncryptedShare {
+                let ciphertext = aead::encrypt(&key, &nonce, &share_to_bytes(share), &[])?;
+                Ok(EncryptedShare {
                     kind: id.kind.clone(),
                     nonce: *nonce.as_bytes(),
                     ciphertext,
-                }
+                })
             })
             .collect();
+        let encrypted = encrypted?;
 
         Ok((
             MasterSecret(secret),
